@@ -19,28 +19,40 @@ require 'vendor/autoload.php';
 
 use RPurinton\Config;
 
-$config = new Config("MySQL");
-print_r($config);
+try {
+    // Initialize configuration with a file name and required keys
+    $config = new Config("MySQL", [
+        'host' => 'string',
+        'user' => 'string',
+        'pass' => 'string',
+        'db' => 'string'
+    ]);
 
-/*
-Example Output:
+    // Access configuration values
+    print_r($config);
 
-RPurinton\Config Object
-(
-    [config:RPurinton\Config:public] => Array
-        (
-            [host] => localhost
-            [user] => root
-            [pass] => password
-            [db] => my_database
-        )
-)
-*/
+    /*
+    Example Output:
 
-// Change the configuration file
-$config->config['pass'] = 'new_password';
-$config->save();
+    RPurinton\Config Object
+    (
+        [config:RPurinton\Config:public] => Array
+            (
+                [host] => localhost
+                [user] => root
+                [pass] => password
+                [db] => my_database
+            )
+    )
+    */
 
+    // Change the configuration file
+    $config->config['pass'] = 'new_password';
+    $config->save();
+
+} catch (RPurinton\ConfigException $e) {
+    echo "Configuration error: " . $e->getMessage();
+}
 ```
 
 ## License
