@@ -1,0 +1,20 @@
+{
+    "name": "rpurinton/config",
+    "description": "A basic configuration loading utility.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Russell Purinton",
+            "email": "russell.purinton@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "RPurinton\\": "src/"
+        }
+    },
+    "version": "1.0.0",
+    "minimum-stability": "stable"
+}
