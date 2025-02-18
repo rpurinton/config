@@ -1,5 +1,5 @@
 <?php
 
-namespace RPurinton;
+namespace RPurinton\Exceptions;
 
 class ConfigException extends \RuntimeException {}

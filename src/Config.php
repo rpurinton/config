@@ -2,6 +2,8 @@
 
 namespace RPurinton;
 
+use RPurinton\Exceptions\ConfigException;
+
 /**
  * Class Config
  *
