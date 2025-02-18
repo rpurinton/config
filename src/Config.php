@@ -123,6 +123,21 @@ class Config
     }
 
     /**
+     * Static factory method to create a new Config instance and return the configuration array only.
+     * This method is useful when you only need to read the configuration data without saving it back.
+     * If you need to save the configuration, use the constructor and call the save() method.
+     * 
+     * @param string $name The base name of the configuration file (without extension).
+     * @param array $required An associative array of required keys and their expected types.
+     * 
+     * @return array The configuration data as an associative array.
+     */
+    public static function get(string $name, array $required = []): array
+    {
+        return (new Config($name, $required))->config;
+    }
+
+    /**
      * Saves the current configuration to a JSON file atomically.
      *
      * This method performs the following steps:
