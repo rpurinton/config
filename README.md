@@ -19,11 +19,28 @@ require 'vendor/autoload.php';
 
 use RPurinton\Config;
 
-$config = new Config();
-$config->load('path/to/config/file');
+$config = new Config("MySQL");
+print_r($config);
 
-// Access configuration values
-$value = $config->get('key');
+/*
+Example Output:
+
+RPurinton\Config Object
+(
+    [config:RPurinton\Config:public] => Array
+        (
+            [host] => localhost
+            [user] => root
+            [pass] => password
+            [db] => my_database
+        )
+)
+*/
+
+// Change the configuration file
+$config->config['pass'] = 'new_password';
+$config->save();
+
 ```
 
 ## License
