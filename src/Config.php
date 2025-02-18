@@ -250,76 +250,55 @@ class Config
         $this->validateRequired($keys, $this->config, $this->file);
     }
 
+
+    /**
+     * Normalizes the expected type string to match PHP's gettype() values.
+     *
+     * @param string $type
+     * @return string
+     */
+    private function normalizeType(string $type): string
+    {
+        $map = [
+            'bool'    => 'boolean',
+            'boolean' => 'boolean',
+            'int'     => 'integer',
+            'integer' => 'integer',
+            'float'   => 'double',
+            'double'  => 'double',
+            'string'  => 'string',
+            'array'   => 'array'
+        ];
+        return $map[$type] ?? $type;
+    }
+
     /**
      * Recursively validates the configuration array against the required keys definition.
      *
-     * This is a helper method used by the required() method and works as follows:
-     * 1. For each key defined in the $keys array:
-     *    a. Verify that the key exists in the provided $config array.
-     *    b. If the expected type is itself an array, confirm that the corresponding configuration value is an array
-     *       and recursively validate its subkeys.
-     *    c. If the expected type is a string, validate that the configuration value is of the specified type.
-     * 2. If a key is missing or a type mismatch is detected, a ConfigException is thrown with a descriptive error message.
-     *
-     * The $context parameter provides additional information about where in the configuration chain the error occurred.
-     *
      * @param array  $keys    The associative array of required keys and their expected types (or nested definitions).
      * @param array  $config  The portion of the configuration array to validate.
-     * @param string $context A context string (typically the configuration file path or parent key chain)
-     *                        used to produce detailed error messages indicating where the error was encountered.
+     * @param string $context A context string (typically the configuration file path or parent key chain).
      *
      * @throws ConfigException If a required key is missing, or if a configuration value does not match the expected type.
      */
     private function validateRequired(array $keys, array $config, string $context): void
     {
-        foreach ($keys as $key => $type) {
+        foreach ($keys as $key => $expectedType) {
             if (!array_key_exists($key, $config)) {
                 throw new ConfigException("Missing required {$this->name} configuration key '{$key}' in {$context}. Please add this key to the configuration.");
             }
 
-            // If $type is an array, assume nested configuration and validate recursively
-            if (is_array($type)) {
+            if (is_array($expectedType)) {
                 if (!is_array($config[$key])) {
                     $got = gettype($config[$key]);
                     throw new ConfigException("Invalid type for configuration key '{$key}' in {$context}: expected array, got {$got}. Please update the configuration.");
                 }
-                $this->validateRequired($type, $config[$key], $context . "->{$key}");
+                $this->validateRequired($expectedType, $config[$key], $context . "->{$key}");
             } else {
-                // Validate the configuration value against the expected primitive type
-                switch ($type) {
-                    case 'string':
-                        if (!is_string($config[$key])) {
-                            $got = gettype($config[$key]);
-                            throw new ConfigException("Invalid type for configuration key '{$key}' in {$context}: expected string, got {$got}. Please update the configuration.");
-                        }
-                        break;
-                    case 'int':
-                        if (!is_int($config[$key])) {
-                            $got = gettype($config[$key]);
-                            throw new ConfigException("Invalid type for configuration key '{$key}' in {$context}: expected integer, got {$got}. Please update the configuration.");
-                        }
-                        break;
-                    case 'bool':
-                        if (!is_bool($config[$key])) {
-                            $got = gettype($config[$key]);
-                            throw new ConfigException("Invalid type for configuration key '{$key}' in {$context}: expected boolean, got {$got}. Please update the configuration.");
-                        }
-                        break;
-                    case 'array':
-                        if (!is_array($config[$key])) {
-                            $got = gettype($config[$key]);
-                            throw new ConfigException("Invalid type for configuration key '{$key}' in {$context}: expected array, got {$got}. Please update the configuration.");
-                        }
-                        break;
-                    case 'float':
-                        if (!is_float($config[$key])) {
-                            $got = gettype($config[$key]);
-                            throw new ConfigException("Invalid type for configuration key '{$key}' in {$context}: expected float, got {$got}. Please update the configuration.");
-                        }
-                        break;
-                    default:
-                        $got = gettype($config[$key]);
-                        throw new ConfigException("Invalid configuration type for key '{$key}' in {$context}: expected {$type}, got {$got}. Please update the configuration accordingly.");
+                $normalizedExpected = $this->normalizeType($expectedType);
+                $actualType = gettype($config[$key]);
+                if ($normalizedExpected !== $actualType) {
+                    throw new ConfigException("Invalid type for configuration key '{$key}' in {$context}: expected {$expectedType} ({$normalizedExpected}), got {$actualType}. Please update the configuration.");
                 }
             }
         }
