@@ -1,60 +1,79 @@
-# RPurinton Config
+# RPurinton Configuration Management
 
-A basic configuration loading utility for PHP projects.
+This directory contains the configuration management system for the RPurinton project. The primary component is the `Config` class, which provides a robust mechanism for handling configuration data stored in JSON format.
 
-## Installation
+## Overview
 
-You can install the package via Composer:
+The `Config` class is designed to facilitate the management of configuration data by providing methods to read, validate, and write configuration files. It ensures that configuration files are always in a consistent state, even in the event of a system failure.
 
-```bash
-composer require rpurinton/config
-```
+## Features
+
+- **JSON Configuration**: The configuration data is stored in JSON format, allowing for easy readability and editing.
+- **Automatic File Creation**: If the specified configuration file does not exist, an initial empty configuration file is created automatically.
+- **Validation**: The class supports validation of required configuration keys and their types, ensuring that all necessary configuration data is present and correctly formatted.
+- **Atomic Writes**: Configuration changes are written to a temporary file and then atomically moved to the target location, preventing data corruption.
+- **Error Handling**: Comprehensive error handling is implemented to manage file operations and JSON encoding/decoding issues.
 
 ## Usage
 
-Here's a simple example of how to use the configuration loader:
+### Initialization
+
+To initialize a configuration, create an instance of the `Config` class:
 
 ```php
-require 'vendor/autoload.php';
-
 use RPurinton\Config;
 
-try {
-    // Initialize configuration with a file name and required keys
-    $config = new Config("MySQL", [
-        'host' => 'string',
-        'user' => 'string',
-        'pass' => 'string',
-        'db' => 'string'
-    ]);
-
-    // Access configuration values
-    print_r($config);
-
-    /*
-    Example Output:
-
-    RPurinton\Config Object
-    (
-        [config:RPurinton\Config:public] => Array
-            (
-                [host] => localhost
-                [user] => root
-                [pass] => password
-                [db] => my_database
-            )
-    )
-    */
-
-    // Change the configuration file
-    $config->config['pass'] = 'new_password';
-    $config->save();
-
-} catch (RPurinton\ConfigException $e) {
-    echo "Configuration error: " . $e->getMessage();
-}
+$config = new Config('config_name', [
+    'required_key' => 'string',
+    'nested_key' => [
+        'sub_key' => 'int'
+    ]
+]);
 ```
+
+- **`config_name`**: The base name of the configuration file (without extension).
+- **`required`**: An associative array defining required keys and their expected types.
+
+### Reading Configuration
+
+The configuration data can be accessed directly from the `config` property:
+
+```php
+$data = $config->config;
+```
+
+### Saving Configuration
+
+To save changes to the configuration, use the `save` method:
+
+```php
+$config->save();
+```
+
+### Static Access
+
+For quick access to configuration data without the need to save changes, use the static `get` method:
+
+```php
+$data = Config::get('config_name', [
+    'required_key' => 'string'
+]);
+```
+
+## Error Handling
+
+The `Config` class throws `ConfigException` for any errors encountered during file operations or JSON processing. Ensure to handle these exceptions appropriately in your application.
+
+## Directory Structure
+
+- **`src/Config.php`**: Contains the `Config` class implementation.
+- **`config/`**: The directory where configuration files are stored. This directory is created automatically if it does not exist.
+
+## Requirements
+
+- PHP 7.4 or higher
+- JSON extension enabled
 
 ## License
 
-This package is open-sourced software licensed under the [MIT license](LICENSE).
+This project is licensed under the MIT License. See the LICENSE file for details.
