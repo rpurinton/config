@@ -9,7 +9,10 @@
             "email": "russell.purinton@gmail.com"
         }
     ],
-    "require": [],
+    "require": {
+        "php": "^8.0",
+        "ext-json": "*"
+    },
     "autoload": {
         "psr-4": {
             "RPurinton\\": "src/"
