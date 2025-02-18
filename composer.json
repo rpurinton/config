@@ -9,12 +9,12 @@
             "email": "russell.purinton@gmail.com"
         }
     ],
-    "require": {},
+    "require": [],
     "autoload": {
         "psr-4": {
             "RPurinton\\": "src/"
         }
     },
-    "version": "1.0.0",
+    "version": "1.0.1",
     "minimum-stability": "stable"
 }
