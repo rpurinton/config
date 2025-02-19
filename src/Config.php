@@ -43,37 +43,16 @@ class Config
         $this->file = $this->dir() . $this->name . '.json';
 
         if (!file_exists($this->file)) {
-            $this->createInitialConfig();
-        } else {
-            $this->readConfigFromFile();
+            throw new ConfigException("Configuration file at {$this->file} does not exist.'");
         }
+
+        $this->readConfigFromFile();
 
         if (!empty($required)) {
             $this->required($required);
         }
     }
 
-    /**
-     * Creates an initial configuration file with an empty configuration.
-     *
-     * This method initializes the configuration as an empty array, encodes it into a JSON string
-     * using JSON_PRETTY_PRINT, JSON_UNESCAPED_SLASHES, and JSON_THROW_ON_ERROR options, and writes
-     * the JSON to the configuration file. If encoding or file writing fails, a ConfigException is thrown.
-     *
-     * @throws ConfigException If JSON encoding fails or writing to the configuration file fails.
-     */
-    private function createInitialConfig(): void
-    {
-        $this->config = [];
-        try {
-            $json = json_encode($this->config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
-        } catch (\JsonException $e) {
-            throw new ConfigException("Failed to encode initial configuration data into JSON. Error: " . $e->getMessage() . ". Ensure that the configuration structure is correct.");
-        }
-        if (file_put_contents($this->file, $json) === false) {
-            throw new ConfigException("Failed to create initial configuration file at {$this->file}. Please check file permissions and available disk space.");
-        }
-    }
 
     /**
      * Reads and decodes the configuration data from the JSON file.
