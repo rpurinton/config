@@ -193,8 +193,8 @@ class Config
     private function dir(): string
     {
         $dir = dirname(__DIR__, 4) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR;
-        if (!is_dir($dir) && !mkdir($dir, 0755, true) && !is_dir($dir)) {
-            throw new ConfigException("Failed to create configuration directory at {$dir}. Please verify write permissions and that the path is correct.");
+        if (!is_dir($dir)) {
+            throw new ConfigException("Configuration directory at {$dir} does not exist.");
         }
         return $dir;
     }
