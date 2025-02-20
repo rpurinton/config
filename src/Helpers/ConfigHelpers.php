@@ -52,7 +52,7 @@ class ConfigHelpers
     public static function getConfigDir(): string
     {
         // Retain the original directory calculation.
-        $dir = dirname(__DIR__, 4) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR;
+        $dir = dirname(__DIR__, 5) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR;
         if (!is_dir($dir)) {
             throw new ConfigException("Configuration directory at {$dir} does not exist.");
         }
