@@ -31,12 +31,12 @@ class ConfigValidators
 
             if (is_callable($expected)) {
                 try {
-                    $result = call_user_func($expected, $value);
+                    $result = $expected($value);
                     if ($result !== true) {
-                        throw new ConfigException("Custom validation failed for key '{$key}' in {$context}.");
+                        throw new ConfigException("Config validation failed for key '{$key}' in {$context}.");
                     }
                 } catch (\Throwable $e) {
-                    throw new ConfigException("Custom validation exception for key '{$key}' in {$context}: " . $e->getMessage());
+                    throw new ConfigException("Config validation exception for key '{$key}' in {$context}: " . $e->getMessage());
                 }
             } elseif (is_array($expected)) {
                 if (!is_array($value)) {
