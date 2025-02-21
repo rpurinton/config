@@ -20,7 +20,7 @@ class ConfigValidators
      * @param string $context Context information for error messages.
      * @throws ConfigException if a key is missing or validation fails.
      */
-    public static function validateRequired(array $keys, array $configt): void
+    public static function validateRequired(array $keys, array $config): void
     {
         foreach ($keys as $key => $expected) {
             if (!array_key_exists($key, $config)) {
@@ -43,7 +43,7 @@ class ConfigValidators
                     $got = gettype($value);
                     throw new ConfigException("Invalid type for '{$key}': expected array, got {$got}.");
                 }
-                self::validateRequired($expected, $value, $context . "->{$key}");
+                self::validateRequired($expected, $value);
             } else {
                 // Expected is assumed to be a string type
                 $normalizedExpected = self::normalizeType($expected);
