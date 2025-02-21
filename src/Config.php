@@ -24,9 +24,11 @@ class Config
      * @param array $required Keys required in the configuration.
      * @throws ConfigException If file not found or config fails.
      */
-    public function __construct(string|array $input, array $required = [])
+    public function __construct(string $input, array $required = [], ?array $config = null)
     {
-        if (is_string($input)) {
+        if ($config) {
+            $this->config = $config;
+        } else {
             $this->file = ConfigHelpers::getConfigDir() . $input . '.json';
 
             if (!file_exists($this->file)) {
@@ -34,11 +36,8 @@ class Config
             }
 
             $this->config = ConfigHelpers::readConfigFromFile($this->file);
-        } elseif (is_array($input)) {
-            $this->config = $input;
-        } else {
-            throw new ConfigException("Invalid input type for configuration.");
         }
+
         if (!empty($required)) {
             ConfigValidators::validateRequired($required, $this->config);
         }
@@ -63,9 +62,9 @@ class Config
      * @param array $required Required keys.
      * @return array The configuration.
      */
-    public static function get(string|array $input, array $required = []): array
+    public static function get(string $input, array $required = [], ?array $config = null): array
     {
-        return (new Config($input, $required))->config;
+        return (new Config($input, $required, $config))->config;
     }
 
     /**
