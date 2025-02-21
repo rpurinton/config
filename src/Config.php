@@ -63,9 +63,9 @@ class Config
      * @param array $required Required keys.
      * @return array The configuration.
      */
-    public static function get(string $name, array $required = []): array
+    public static function get(string|array $input, array $required = []): array
     {
-        return (new Config($name, $required))->config;
+        return (new Config($input, $required))->config;
     }
 
     /**
