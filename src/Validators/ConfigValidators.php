@@ -20,11 +20,11 @@ class ConfigValidators
      * @param string $context Context information for error messages.
      * @throws ConfigException if a key is missing or validation fails.
      */
-    public static function validateRequired(array $keys, array $config, string $context): void
+    public static function validateRequired(array $keys, array $configt): void
     {
         foreach ($keys as $key => $expected) {
             if (!array_key_exists($key, $config)) {
-                throw new ConfigException("Missing key '{$key}' in {$context}.");
+                throw new ConfigException("Missing key '{$key}'.");
             }
 
             $value = $config[$key];
@@ -33,15 +33,15 @@ class ConfigValidators
                 try {
                     $result = $expected($value);
                     if ($result !== true) {
-                        throw new ConfigException("Config validation failed for key '{$key}' in {$context}.");
+                        throw new ConfigException("Config validation failed for key '{$key}'.");
                     }
                 } catch (\Throwable $e) {
-                    throw new ConfigException("Config validation exception for key '{$key}' in {$context}: " . $e->getMessage());
+                    throw new ConfigException("Config validation exception for key '{$key}': " . $e->getMessage());
                 }
             } elseif (is_array($expected)) {
                 if (!is_array($value)) {
                     $got = gettype($value);
-                    throw new ConfigException("Invalid type for '{$key}' in {$context}: expected array, got {$got}.");
+                    throw new ConfigException("Invalid type for '{$key}': expected array, got {$got}.");
                 }
                 self::validateRequired($expected, $value, $context . "->{$key}");
             } else {
@@ -49,7 +49,7 @@ class ConfigValidators
                 $normalizedExpected = self::normalizeType($expected);
                 $actualType = gettype($value);
                 if ($normalizedExpected !== $actualType) {
-                    throw new ConfigException("Invalid type for '{$key}' in {$context}: expected {$expected} ({$normalizedExpected}), got {$actualType}.");
+                    throw new ConfigException("Invalid type for '{$key}': expected {$expected} ({$normalizedExpected}), got {$actualType}.");
                 }
             }
         }

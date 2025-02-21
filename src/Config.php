@@ -14,9 +14,6 @@ class Config
     /** @var string Path to the JSON configuration file */
     private string $file;
 
-    /** @var array Parsed configuration data */
-    public array $config;
-
     /**
      * Initializes the configuration.
      *
@@ -24,18 +21,19 @@ class Config
      * @param array $required Keys required in the configuration.
      * @throws ConfigException If file not found or config fails.
      */
-    public function __construct(private string $name, array $required = [])
+    public function __construct(private string $name, array $required = [], public ?array $config = null)
     {
-        $this->file = ConfigHelpers::getConfigDir() . $this->name . '.json';
+        if (!$config) {
+            $this->file = ConfigHelpers::getConfigDir() . $this->name . '.json';
 
-        if (!file_exists($this->file)) {
-            throw new ConfigException("Configuration file at {$this->file} does not exist.'");
+            if (!file_exists($this->file)) {
+                throw new ConfigException("Configuration file at {$this->file} does not exist.'");
+            }
+
+            $this->config = ConfigHelpers::readConfigFromFile($this->file);
         }
-
-        $this->config = ConfigHelpers::readConfigFromFile($this->file);
-
         if (!empty($required)) {
-            ConfigValidators::validateRequired($required, $this->config, $this->file);
+            ConfigValidators::validateRequired($required, $this->config);
         }
     }
 
