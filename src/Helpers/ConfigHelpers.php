@@ -60,59 +60,16 @@ class ConfigHelpers
     }
 
     /**
-     * Atomically replaces the target file with the temporary file.
-     *
-     * @param string $tempFile Path to the temporary file.
-     * @param string $targetFile Path to the target file.
-     * @throws ConfigException If the replacement operation fails.
-     */
-    public static function atomicFileReplace(string $tempFile, string $targetFile): void
-    {
-        $fp = null;
-        try {
-            if (file_exists($targetFile)) {
-                $fp = fopen($targetFile, 'c');
-                if (!$fp) {
-                    throw new ConfigException("Unable to open {$targetFile} for locking.");
-                }
-                if (!flock($fp, LOCK_EX)) {
-                    throw new ConfigException("Unable to obtain an exclusive lock for {$targetFile}.");
-                }
-            }
-
-            if (!rename($tempFile, $targetFile)) {
-                throw new ConfigException("Atomic replacement failed: unable to rename {$tempFile} to {$targetFile}.");
-            }
-        } catch (\Throwable $e) {
-            @unlink($tempFile);
-            throw $e;
-        } finally {
-            if ($fp !== null) {
-                flock($fp, LOCK_UN);
-                fclose($fp);
-            }
-        }
-    }
-
-    /**
-     * Writes the provided JSON string to the target file atomically.
+     * Writes the provided JSON string to the target file.
      *
      * @param string $targetFile Path to the target configuration file.
      * @param string $json JSON encoded configuration.
-     * @throws ConfigException If any file operation fails.
+     * @throws ConfigException If writing to the file fails.
      */
     public static function writeJsonToFile(string $targetFile, string $json): void
     {
-        $tempFile = tempnam(dirname($targetFile), 'tmp_');
-        if ($tempFile === false) {
-            throw new ConfigException("Failed to create a temporary file in " . dirname($targetFile) . ".");
+        if (file_put_contents($targetFile, $json) === false) {
+            throw new ConfigException("Failed to write configuration data to {$targetFile}.");
         }
-
-        if (file_put_contents($tempFile, $json) === false) {
-            @unlink($tempFile);
-            throw new ConfigException("Failed to write configuration data to temporary file at {$tempFile}.");
-        }
-
-        self::atomicFileReplace($tempFile, $targetFile);
     }
 }
