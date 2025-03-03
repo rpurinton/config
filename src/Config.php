@@ -6,24 +6,11 @@ use RPurinton\Helpers\ConfigHelpers;
 use RPurinton\Exceptions\ConfigException;
 use RPurinton\Validators\ConfigValidators;
 
-/**
- * Manages JSON configuration file.
- */
 class Config
 {
-    /** @var string Path to the JSON configuration file */
     private string $file;
-
-    /** @var array Configuration data */
     public array $config;
 
-    /**
-     * Initializes the configuration.
-     *
-     * @param string $name Base name for the JSON file.
-     * @param array $required Keys required in the configuration.
-     * @throws ConfigException If file not found or config fails.
-     */
     public function __construct(string $input, array $required = [], ?array $config = null)
     {
         if ($config) {
@@ -43,35 +30,16 @@ class Config
         }
     }
 
-    /**
-     * Opens a new instance of the configuration.
-     *
-     * @param string $name Base name for the JSON file.
-     * @param array $required Required keys.
-     * @return Config The configuration instance.
-     */
     public static function open(string $name, array $required = []): Config
     {
         return new Config($name, $required);
     }
 
-    /**
-     * Returns configuration array from a new instance.
-     *
-     * @param string $name Base name for the JSON file.
-     * @param array $required Required keys.
-     * @return array The configuration.
-     */
     public static function get(string $input, array $required = [], ?array $config = null): array
     {
         return (new Config($input, $required, $config))->config;
     }
 
-    /**
-     * Atomically saves the current configuration.
-     *
-     * @throws ConfigException If saving the configuration fails.
-     */
     public function save(): void
     {
         if (!$this->config) {
